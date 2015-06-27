@@ -1,5 +1,77 @@
 {
-    "USERTOKENSTRING" :  "YOUR USER TOKEN STRING",
-    "URLTOKENSTRING" :  "YOUR URL TOKEN STRING",
-    "TEAMNAMESTRING" : "YOUR SLACK TEAM NAME"
+  "teamDomain": "meraki-engineering",
+  "channelName": "ot-fitness",
+  "channelId": "C06T76C8N",
+
+  "debug": false,
+
+  "callouts": {
+    "timeBetween": {
+      "minTime": 15,
+      "maxTime": 30,
+      "units": "minutes"
+    },
+    "numPeople": 3,
+    "slidingWindowSize": 8,
+    "groupCalloutChance": 0.05
+  },
+
+  "exercises": [
+    {
+      "id": 0,
+      "name": "pushups",
+      "minReps": 7,
+      "maxReps": 20,
+      "units": "rep"
+    },
+    {
+      "id": 1,
+      "name": "planks",
+      "minReps": 40,
+      "maxReps": 60,
+      "units": "second"
+    },
+    {
+      "id": 2,
+      "name": "wall sit",
+      "minReps": 40,
+      "maxReps": 50,
+      "units": "second"
+    },
+    {
+      "id": 3,
+      "name": "chair dips",
+      "minReps": 7,
+      "maxReps": 20,
+      "units": "rep"
+    },
+    {
+      "id": 4,
+      "name": "calf raises",
+      "minReps": 20,
+      "maxReps": 30,
+      "units": "rep"
+    },
+    {
+      "id": 5,
+      "name": "jumping jacks",
+      "minReps": 20,
+      "maxReps": 30,
+      "units": "rep"
+    },
+    {
+      "id": 6,
+      "name": "squats",
+      "minReps": 15,
+      "maxReps": 30,
+      "units": "rep"
+    },
+    {
+      "id": 7,
+      "name": "situps",
+      "minReps": 15,
+      "maxReps": 30,
+      "units": "rep"
+    }
+  ]
 }

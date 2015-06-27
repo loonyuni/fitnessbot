@@ -15,7 +15,6 @@ from User import User
 # Environment variables must be set with your tokens
 USER_TOKEN_STRING =  os.environ['SLACK_USER_TOKEN_STRING']
 URL_TOKEN_STRING =  os.environ['SLACK_URL_TOKEN_STRING']
-
 HASH = "%23"
 
 
@@ -230,13 +229,20 @@ def logExercise(bot,username,exercise,reps,units):
         writer.writerow([str(datetime.now()),username,exercise,reps,units,bot.debug])
 
 def saveUsers(bot):
+    displayResults(bot)
+
+    # write to file
+    with open('user_cache.save','wb') as f:
+        pickle.dump(bot.user_cache,f)
+
+def displayResults(bot):
     # Write to the command console today's breakdown
     s = "```\n"
     #s += "Username\tAssigned\tComplete\tPercent
     s += "Username".ljust(15)
     for exercise in bot.exercises:
         s += exercise["name"] + "  "
-    s += "\n---------------------------------------------------------------\n"
+    s += "\n-----------------------------------------------------------------------------------\n"
 
     for user_id in bot.user_cache:
         user = bot.user_cache[user_id]
@@ -257,15 +263,12 @@ def saveUsers(bot):
     print s
 
 
-    # write to file
-    with open('user_cache.save','wb') as f:
-        pickle.dump(bot.user_cache,f)
-
 
 def main():
     bot = Bot()
 
     try:
+        count = 0
         while True:
             # Re-fetch config file if settings have changed
             bot.setConfiguration()
@@ -275,6 +278,12 @@ def main():
 
             # Assign the exercise to someone
             assignExercise(bot, exercise)
+            
+            # Show results more frequently
+            if count is 5:
+              displayResults(bot)
+              count = 0
+            count += 1
     except KeyboardInterrupt:
         saveUsers(bot)
 
