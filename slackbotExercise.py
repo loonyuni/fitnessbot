@@ -254,7 +254,7 @@ def displayResults(bot):
                 s += str(0).ljust(len(exercise["name"]) + 2)
         s += "\n"
 
-        user.storeSession(str(datetime.now()))
+        # user.storeSession(str(datetime.now()))
 
     s += "```"
 
@@ -268,7 +268,6 @@ def main():
     bot = Bot()
 
     try:
-        count = 0
         while True:
             # Re-fetch config file if settings have changed
             bot.setConfiguration()
@@ -279,11 +278,6 @@ def main():
             # Assign the exercise to someone
             assignExercise(bot, exercise)
             
-            # Show results more frequently
-            if count is 5:
-              displayResults(bot)
-              count = 0
-            count += 1
     except KeyboardInterrupt:
         saveUsers(bot)
 

@@ -18,7 +18,7 @@ class User:
         # A list of all exercises done by user
         self.exercise_history = []
 
-        # A record of all exercise totals (quantity)
+        # A record of all exercise totals (quantity/reps)
         self.exercises = {}
 
         # A record of exercise counts (# of times)
@@ -32,7 +32,7 @@ class User:
 
     def storeSession(self, run_name):
         try:
-            self.past_workouts[run_name] = self.exercises
+            self./repspast_workouts[run_name] = self.exercises
         except:
             self.past_workouts = {}
 

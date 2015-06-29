@@ -7,8 +7,8 @@
 
   "callouts": {
     "timeBetween": {
-      "minTime": 15,
-      "maxTime": 30,
+      "minTime": 10,
+      "maxTime": 25,
       "units": "minutes"
     },
     "numPeople": 3,
