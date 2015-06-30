@@ -3,12 +3,13 @@
   "channelName": "ot-fitness",
   "channelId": "C06T76C8N",
 
-  "debug": false,
+  "debug": true,
+  "clean": true,
 
   "callouts": {
     "timeBetween": {
-      "minTime": 10,
-      "maxTime": 25,
+      "minTime": 15,
+      "maxTime": 30,
       "units": "minutes"
     },
     "numPeople": 3,
@@ -71,6 +72,13 @@
       "name": "situps",
       "minReps": 15,
       "maxReps": 30,
+      "units": "rep"
+    },
+    {
+      "id": 8,
+      "name": "burpees",
+      "minReps": 1,
+      "maxReps": 5,
       "units": "rep"
     }
   ]

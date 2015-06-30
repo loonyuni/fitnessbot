@@ -32,7 +32,7 @@ class User:
 
     def storeSession(self, run_name):
         try:
-            self./repspast_workouts[run_name] = self.exercises
+            self.past_workouts[run_name] = self.exercises
         except:
             self.past_workouts = {}
 
@@ -66,6 +66,7 @@ class User:
             response = requests.get("https://slack.com/api/users.getPresence",
                     params=params)
             status = json.loads(response.text, encoding='utf-8')["presence"]
+            logging.captureWarnings(true)
 
             return status == "active"
         except requests.exceptions.ConnectionError:

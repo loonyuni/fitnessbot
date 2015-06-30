@@ -8,6 +8,7 @@ from random import shuffle
 import pickle
 import os.path
 import time
+import logging
 from datetime import datetime
 
 from User import User
@@ -16,7 +17,6 @@ from User import User
 USER_TOKEN_STRING =  os.environ['SLACK_USER_TOKEN_STRING']
 URL_TOKEN_STRING =  os.environ['SLACK_URL_TOKEN_STRING']
 HASH = "%23"
-
 
 # Configuration values to be set in setConfiguration
 class Bot:
@@ -64,6 +64,7 @@ class Bot:
             self.exercises = settings["exercises"]
 
             self.debug = settings["debug"]
+            self.clean = settings["clean"]
 
         self.post_URL = "https://" + self.team_domain + ".slack.com/services/hooks/slackbot?token=" + URL_TOKEN_STRING + "&channel=" + HASH + self.channel_name
 
@@ -84,10 +85,10 @@ def selectUser(bot, exercise):
             bot.user_queue.append(user)
 
     # The max number of users we are willing to look forward
-    # to try and find a good match
     sliding_window = bot.sliding_window_size
 
     # find a user to draw, priority going to first in
+    print [u.username for u in bot.user_queue]
     for i in range(len(bot.user_queue)):
         user = bot.user_queue[i]
 
@@ -120,6 +121,7 @@ def fetchActiveUsers(bot):
     # Check for new members
     params = {"token": USER_TOKEN_STRING, "channel": bot.channel_id}
     response = requests.get("https://slack.com/api/channels.info", params=params)
+    logging.captureWarnings(True)
     user_ids = json.loads(response.text, encoding='utf-8')["channel"]["members"]
 
     active_users = []
@@ -198,7 +200,7 @@ def assignExercise(bot, exercise):
             user = bot.user_cache[user_id]
             user.addExercise(exercise, exercise_reps)
         
-        logExercise(bot,"@channel",exercise["name"],exercise_reps,exercise["units"])
+        # logExercise(bot,"@channel",exercise["name"],exercise_reps,exercise["units"])
 
     else:
         winners = [selectUser(bot, exercise) for i in range(bot.num_people_per_callout)]
@@ -213,7 +215,7 @@ def assignExercise(bot, exercise):
                 winner_announcement += ", "
 
             winners[i].addExercise(exercise, exercise_reps)
-            logExercise(bot,winners[i].getUserHandle(),exercise["name"],exercise_reps,exercise["units"])
+            # logExercise(bot,winners[i].getUserHandle(),exercise["name"],exercise_reps,exercise["units"])
 
     # Announce the user
     if not bot.debug:
@@ -229,20 +231,22 @@ def logExercise(bot,username,exercise,reps,units):
         writer.writerow([str(datetime.now()),username,exercise,reps,units,bot.debug])
 
 def saveUsers(bot):
-    displayResults(bot)
-
+    if bot.debug:
+      with open('user_cache_test.save', 'wb') as f:
+        pickle.dump(bot.user_cache, f)
     # write to file
-    with open('user_cache.save','wb') as f:
-        pickle.dump(bot.user_cache,f)
+    else:
+        with open('user_cache.save','wb') as f:
+            pickle.dump(bot.user_cache, f)
 
-def displayResults(bot):
+def getResults(bot):
     # Write to the command console today's breakdown
     s = "```\n"
     #s += "Username\tAssigned\tComplete\tPercent
     s += "Username".ljust(15)
     for exercise in bot.exercises:
         s += exercise["name"] + "  "
-    s += "\n-----------------------------------------------------------------------------------\n"
+    s += "\n---------------------------------------------------------------------------------------------\n"
 
     for user_id in bot.user_cache:
         user = bot.user_cache[user_id]
@@ -258,15 +262,38 @@ def displayResults(bot):
 
     s += "```"
 
-    if not bot.debug:
-        requests.post(bot.post_URL, data=s)
-    print s
+    # if not bot.debug:
+    #     requests.post(bot.post_URL, data=s)
+    print s 
+    return s
 
+def setChannelTopicResults(bot):
+    print "SETTTING CHANNEL RESULTS!!"
+    results = getResults(bot) 
+    params = {"token": USER_TOKEN_STRING, "channel": bot.channel_id, "topic": results}
+    response = requests.get("https://slack.com/api/channels.setTopic", params=params)
+    print response
+    logging.captureWarnings(True)
 
+def removeOldUsers(bot):
+    params = {"token": USER_TOKEN_STRING, "channel": bot.channel_id}
+    response = requests.get("https://slack.com/api/channels.info", params=params)
+    logging.captureWarnings(True)
+    user_ids = json.loads(response.text, encoding='utf-8')["channel"]["members"]
+
+    old_users = []
+
+    for cached_user_id in bot.user_cache:
+        if cached_user_id not in user_ids:
+            old_users.append(cached_user_id)
+    for user_id in old_users:
+        bot.user_cache.pop(user_id)
 
 def main():
     bot = Bot()
 
+    if bot.clean:
+      removeOldUsers(bot)
     try:
         while True:
             # Re-fetch config file if settings have changed
@@ -277,9 +304,10 @@ def main():
 
             # Assign the exercise to someone
             assignExercise(bot, exercise)
-            
+           
+            setChannelTopicResults(bot)
     except KeyboardInterrupt:
-        saveUsers(bot)
+      saveUsers(bot)
 
 
 main()
