@@ -2,6 +2,7 @@ import os
 import requests
 import json
 import datetime
+import logging
 
 # Environment variables must be set with your tokens
 USER_TOKEN_STRING =  os.environ['SLACK_USER_TOKEN_STRING']
@@ -27,7 +28,7 @@ class User:
         # A record of past runs
         self.past_workouts = {}
 
-        print "New user: " + self.real_name + " (" + self.username + ")"
+        # print "New user: " + self.real_name + " (" + self.username + ")"
 
 
     def storeSession(self, run_name):
@@ -66,7 +67,7 @@ class User:
             response = requests.get("https://slack.com/api/users.getPresence",
                     params=params)
             status = json.loads(response.text, encoding='utf-8')["presence"]
-            logging.captureWarnings(true)
+            logging.captureWarnings(True)
 
             return status == "active"
         except requests.exceptions.ConnectionError:

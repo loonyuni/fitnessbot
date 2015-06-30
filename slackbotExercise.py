@@ -16,6 +16,7 @@ from User import User
 # Environment variables must be set with your tokens
 USER_TOKEN_STRING =  os.environ['SLACK_USER_TOKEN_STRING']
 URL_TOKEN_STRING =  os.environ['SLACK_URL_TOKEN_STRING']
+
 HASH = "%23"
 
 # Configuration values to be set in setConfiguration
@@ -35,11 +36,18 @@ class Bot:
 
 
     def loadUserCache(self):
-        if os.path.isfile('user_cache.save'):
-            with open('user_cache.save','rb') as f:
-                self.user_cache = pickle.load(f)
-                print "Loading " + str(len(self.user_cache)) + " users from cache."
-                return self.user_cache
+        if self.debug:
+            if os.path.isfile('user_cache_test.save'):
+                with open('user_cache_test.save','rb') as f:
+                    self.user_cache = pickle.load(f)
+                    print "Loading " + str(len(self.user_cache)) + " users from cache."
+                    return self.user_cache
+        else:
+            if os.path.isfile('user_cache.save'):
+                with open('user_cache.save','rb') as f:
+                    self.user_cache = pickle.load(f)
+                    print "Loading " + str(len(self.user_cache)) + " users from cache."
+                    return self.user_cache
 
         return {}
 
@@ -88,7 +96,7 @@ def selectUser(bot, exercise):
     sliding_window = bot.sliding_window_size
 
     # find a user to draw, priority going to first in
-    print [u.username for u in bot.user_queue]
+    # print [u.username for u in bot.user_queue]
     for i in range(len(bot.user_queue)):
         user = bot.user_queue[i]
 
@@ -163,7 +171,7 @@ def selectExerciseAndStartTime(bot):
         time.sleep(next_time_interval)
     else:
         # If debugging, once every 5 seconds
-        time.sleep(5)
+        time.sleep(1)
 
     return exercise
 
@@ -220,6 +228,7 @@ def assignExercise(bot, exercise):
     # Announce the user
     if not bot.debug:
         requests.post(bot.post_URL, data=winner_announcement)
+        saveUsers()
     print winner_announcement
 
 
@@ -289,9 +298,10 @@ def removeOldUsers(bot):
     for user_id in old_users:
         bot.user_cache.pop(user_id)
 
+
 def main():
     bot = Bot()
-
+    getResults(bot)
     if bot.clean:
       removeOldUsers(bot)
     try:
@@ -305,7 +315,9 @@ def main():
             # Assign the exercise to someone
             assignExercise(bot, exercise)
            
-            setChannelTopicResults(bot)
+            # setChannelTopicResults(bot)
+            getResults(bot)
+            saveusrs(bot)
     except KeyboardInterrupt:
       saveUsers(bot)
 
