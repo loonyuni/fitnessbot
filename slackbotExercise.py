@@ -83,7 +83,7 @@ Selects an active user from a list of users
 '''
 def selectUser(bot, exercise):
     active_users = fetchActiveUsers(bot)
-
+    
     # Add all active users not already in the user queue
     # Shuffles to randomly add new active users
     shuffle(active_users)
@@ -141,8 +141,8 @@ def fetchActiveUsers(bot):
             if not bot.first_run:
                 # Push our new users near the front of the queue!
                 bot.user_queue.insert(2,bot.user_cache[user_id])
-
-        if bot.user_cache[user_id].isActive():
+        
+        if bot.user_cache[user_id].isActive() and user_id.encode('ascii', 'ignore') != 'U070HL4NR':
             active_users.append(bot.user_cache[user_id])
 
     if bot.first_run:
@@ -228,7 +228,7 @@ def assignExercise(bot, exercise):
     # Announce the user
     if not bot.debug:
         requests.post(bot.post_URL, data=winner_announcement)
-        saveUsers()
+        saveUsers(bot)
     print winner_announcement
 
 
@@ -299,9 +299,15 @@ def removeOldUsers(bot):
         bot.user_cache.pop(user_id)
 
 
+def postResults(bot):
+    s = getResults(bot)
+    if not bot.debug:
+        requests.post(bot.post_URL, data=s)
+
 def main():
     bot = Bot()
     getResults(bot)
+
     if bot.clean:
       removeOldUsers(bot)
     try:
@@ -317,8 +323,9 @@ def main():
            
             # setChannelTopicResults(bot)
             getResults(bot)
-            saveusrs(bot)
+            saveUsers(bot)
     except KeyboardInterrupt:
+      postResults(bot)
       saveUsers(bot)
 
 

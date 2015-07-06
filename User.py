@@ -66,7 +66,10 @@ class User:
             params = {"token": USER_TOKEN_STRING, "user": self.id}
             response = requests.get("https://slack.com/api/users.getPresence",
                     params=params)
-            status = json.loads(response.text, encoding='utf-8')["presence"]
+            try:
+              status = json.loads(response.text, encoding='utf-8')["presence"]
+            except e:
+              print e
             logging.captureWarnings(True)
 
             return status == "active"

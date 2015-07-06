@@ -9,10 +9,10 @@
   "callouts": {
     "timeBetween": {
       "minTime": 15,
-      "maxTime": 30,
+      "maxTime": 28,
       "units": "minutes"
     },
-    "numPeople": 3,
+    "numPeople": 5,
     "slidingWindowSize": 8,
     "groupCalloutChance": 0.05
   },
