@@ -3,18 +3,18 @@
   "channelName": "ot-fitness",
   "channelId": "C06T76C8N",
 
-  "debug": true,
+  "debug": false,
   "clean": true,
 
   "callouts": {
     "timeBetween": {
-      "minTime": 15,
-      "maxTime": 28,
+      "minTime": 27,
+      "maxTime": 36,
       "units": "minutes"
     },
     "numPeople": 5,
-    "slidingWindowSize": 8,
-    "groupCalloutChance": 0.05
+    "slidingWindowSize": 9,
+    "groupCalloutChance": 0.09
   },
 
   "exercises": [

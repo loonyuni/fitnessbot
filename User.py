@@ -68,9 +68,8 @@ class User:
                     params=params)
             try:
               status = json.loads(response.text, encoding='utf-8')["presence"]
-            except e:
-              print e
-            logging.captureWarnings(True)
+            except:
+              print "unexpected error!" + sys.exc_info()[0]
 
             return status == "active"
         except requests.exceptions.ConnectionError:

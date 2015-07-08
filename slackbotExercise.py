@@ -9,7 +9,8 @@ import pickle
 import os.path
 import time
 import logging
-from datetime import datetime
+import datetime
+import multiprocessing
 
 from User import User
 
@@ -159,7 +160,7 @@ def selectExerciseAndStartTime(bot):
     exercise = selectExercise(bot)
 
     # Announcement String of next lottery time
-    lottery_announcement = "NEXT LOTTERY FOR " + exercise["name"].upper() + " IS IN " + str(next_time_interval/60) + " MINUTES"
+    lottery_announcement = "*NEXT LOTTERY FOR " + exercise["name"].upper() + " IS IN " + str(next_time_interval/60) + " MINUTES*"
 
     # Announce the exercise to the thread
     if not bot.debug:
@@ -197,8 +198,10 @@ Selects a person to do the already-selected exercise
 def assignExercise(bot, exercise):
     # Select number of reps
     exercise_reps = random.randrange(exercise["minReps"], exercise["maxReps"]+1)
-
-    winner_announcement = str(exercise_reps) + " " + str(exercise["units"]) + " " + exercise["name"] + " RIGHT NOW "
+    if exercise["name"].lower() == "situps":
+      winner_announcement = "*" + str(exercise_reps) + " " + str(exercise["units"]) + " " + exercise["name"] + "OR" + str(2*exercise_reps) + "crunches" + " RIGHT NOW *"
+    else:
+      winner_announcement = "*" + str(exercise_reps) + " " + str(exercise["units"]) + " " + exercise["name"] + " RIGHT NOW *"
     
     # EVERYBODY
     if random.random() < bot.group_callout_chance:
@@ -231,14 +234,6 @@ def assignExercise(bot, exercise):
         saveUsers(bot)
     print winner_announcement
 
-
-def logExercise(bot,username,exercise,reps,units):
-    filename = bot.csv_filename + "_DEBUG" if bot.debug else bot.csv_filename
-    with open(filename, 'a') as f:
-        writer = csv.writer(f)
-
-        writer.writerow([str(datetime.now()),username,exercise,reps,units,bot.debug])
-
 def saveUsers(bot):
     if bot.debug:
       with open('user_cache_test.save', 'wb') as f:
@@ -255,7 +250,7 @@ def getResults(bot):
     s += "Username".ljust(15)
     for exercise in bot.exercises:
         s += exercise["name"] + "  "
-    s += "\n---------------------------------------------------------------------------------------------\n"
+    s += "\n---------------------------------------------------------------------------------------------------------\n"
 
     for user_id in bot.user_cache:
         user = bot.user_cache[user_id]
@@ -304,12 +299,12 @@ def postResults(bot):
     if not bot.debug:
         requests.post(bot.post_URL, data=s)
 
-def main():
+def run():
     bot = Bot()
     getResults(bot)
 
-    if bot.clean:
-      removeOldUsers(bot)
+    if bot.clean and bot.first_run:
+        removeOldUsers(bot)
     try:
         while True:
             # Re-fetch config file if settings have changed
@@ -329,4 +324,22 @@ def main():
       saveUsers(bot)
 
 
-main()
+def timeToQuit():
+    lunch_start = datetime.time(12,0)
+    lunch_end = datetime.time(13,0)
+    day_end = datetime.time(17,30)
+    now = datetime.datetime.now().time()
+    if ((now > lunch_start) and (now < lunch_end)) or (now > day_end):
+      print "Shutting down!"
+      return True
+    else: 
+      return False
+
+if __name__ == '__main__':
+    p = multiprocessing.Process(target=run, name="Run")
+    p.start()
+    running = True
+    while running:
+      if timeToQuit():
+        p.terminate()
+        running = False
