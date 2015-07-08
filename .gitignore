@@ -5,3 +5,4 @@ log*.csv
 log*.csv_DEBUG
 user_cache.save
 user_cache_test.save
+*.swp
