@@ -5,4 +5,7 @@ log*.csv
 log*.csv_DEBUG
 user_cache.save
 user_cache_test.save
+export_tokens
 *.swp
+*.bat
+*.sw
