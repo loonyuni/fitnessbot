@@ -323,7 +323,9 @@ def run():
       postResults(bot)
       saveUsers(bot)
 
+run()
 
+'''
 def timeToQuit():
     lunch_start = datetime.time(12,0)
     lunch_end = datetime.time(13,0)
@@ -343,3 +345,4 @@ if __name__ == '__main__':
       if timeToQuit():
         p.terminate()
         running = False
+''' 
