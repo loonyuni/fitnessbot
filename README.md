@@ -47,4 +47,7 @@ A fun hack that gets Slackbot to force your teammates to work out!
 
     `$ python slackbotExercise.py`
 
+9. And in another pane in the same project directory, run
+    `$ python swolebot.py`
+
 Run the script to start the workouts and hit ctrl+c to stop the script. Hope you have fun with it!

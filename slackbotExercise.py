@@ -199,7 +199,7 @@ def assignExercise(bot, exercise):
     # Select number of reps
     exercise_reps = random.randrange(exercise["minReps"], exercise["maxReps"]+1)
     if exercise["name"].lower() == "situps":
-      winner_announcement = "*" + str(exercise_reps) + " " + str(exercise["units"]) + " " + exercise["name"] + "OR" + str(2*exercise_reps) + "crunches" + " RIGHT NOW *"
+      winner_announcement = "*" + str(exercise_reps) + " " + str(exercise["units"]) + " " + exercise["name"] + " OR " + str(2*exercise_reps) + "crunches" + " RIGHT NOW *"
     else:
       winner_announcement = "*" + str(exercise_reps) + " " + str(exercise["units"]) + " " + exercise["name"] + " RIGHT NOW *"
     
